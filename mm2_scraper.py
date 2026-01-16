@@ -7,7 +7,7 @@ from selenium.common.exceptions import TimeoutException
 
 from bs4 import BeautifulSoup
 
-# --------- DRIVER SETUP ---------
+#setup
 def make_driver():
     options = Options()
     options.page_load_strategy = "eager"
@@ -16,12 +16,12 @@ def make_driver():
     options.add_argument("--window-size=1920,1080")
     return webdriver.Chrome(options=options)
 
-# --------- REGEX HELPER ---------
+#regex 
 def extract(pattern, text):
     m = re.search(pattern, text)
     return m.group(1).strip() if m else ""
 
-# --------- SCRAPER ---------
+# -scraper
 def scrape_category(category):
     url = f"https://mm2values.com/?p={category}"
     print(f"\nLoading {url}")
@@ -31,14 +31,14 @@ def scrape_category(category):
 
     try:
         driver.get(url)
-        time.sleep(4)  # wait for JS content
+        time.sleep(4)  #wait for js content; change if needed
     except TimeoutException:
         print("Page load timeout")
         driver.quit()
         return []
 
     html = driver.page_source
-    driver.quit()  # CLOSE DRIVER EARLY
+    driver.quit()  
 
     soup = BeautifulSoup(html, "html.parser")
     items = []
@@ -51,11 +51,10 @@ def scrape_category(category):
         lines = text.splitlines()
         name = lines[0]
 
-        # --- FIXED: Allow decimals in rarity ---
         value = extract(r"Value:\s*([\d,]+|N/A)", text).replace(",", "")
         range_ = extract(r"Range:\s*(.+)", text)
         demand = extract(r"Demand:\s*([\d.]+)", text)
-        rarity = extract(r"Rarity:\s*([\d.]+)", text)  # <-- FIXED
+        rarity = extract(r"Rarity:\s*([\d.]+)", text)  #fixed
         stability = extract(r"Stability:\s*(.+)", text)
 
         items.append({
@@ -69,13 +68,14 @@ def scrape_category(category):
 
     return items
 
-# --------- MAIN LOOP ---------
-categories = ["chroma"]
+
+categories = ["category1", "category2", "category3", "etc"]
+#MAKE SURE THAT THE CATEGORY IS WHAT IS EXACTLY APPENDED AFTER mm2values.com/?p=
 
 for cat in categories:
     data = scrape_category(cat)
 
-    # DELETE first 3 items (usually headers)
+   
     data = data[3:]
 
     filename = f"mm2values_{cat}.txt"
@@ -92,3 +92,4 @@ for cat in categories:
     print(f"Saved {len(data)} items (skipped headers) -> {filename}")
 
 print("\nDone.")
+
