@@ -1,6 +1,3 @@
-discord.py 
-selenium 
-webdriver-manager 
-pandas 
-requests 
+selenium
 beautifulsoup4
+webdriver-manager
